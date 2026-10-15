@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_bbs_rab_user,bbs.rab.user,model_bbs_rab,base.group_user,1,1,1,1
+access_bbs_rab_line_user,bbs.rab.line.user,model_bbs_rab_line,base.group_user,1,1,1,1
+access_bbs_cash_flow_user,bbs.cash.flow.user,model_bbs_cash_flow,base.group_user,1,1,1,1
+access_bbs_cash_config_user,bbs.cash.config.user,model_bbs_cash_config,base.group_user,1,1,1,1

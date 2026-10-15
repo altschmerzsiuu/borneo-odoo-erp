@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Tree / List View -->
+    <record id="view_bbs_horse_tree" model="ir.ui.view">
+        <field name="name">bbs.horse.tree</field>
+        <field name="model">bbs.horse</field>
+        <field name="arch" type="xml">
+            <tree string="Daftar Kuda BBS">
+                <field name="name"/>
+                <field name="breed"/>
+                <field name="gender"/>
+                <field name="color"/>
+                <field name="age"/>
+                <field name="stable_box"/>
+                <field name="primary_groomer_id"/>
+                <field name="owner_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Kanban View (Visual Card) -->
+    <record id="view_bbs_horse_kanban" model="ir.ui.view">
+        <field name="name">bbs.horse.kanban</field>
+        <field name="model">bbs.horse</field>
+        <field name="arch" type="xml">
+            <kanban string="Kuda BBS" sample="1">
+                <field name="id"/>
+                <field name="name"/>
+                <field name="breed"/>
+                <field name="stable_box"/>
+                <field name="primary_groomer_id"/>
+                <field name="image_1920"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_global_click o_kanban_record_has_image_fill o_res_partner_kanban">
+                            <div class="o_kanban_image_fill_left d-none d-md-block" 
+                                 t-attf-style="background-image:url('#{kanban_image('bbs.horse', 'image_1920', record.id.raw_value)}')"/>
+                            <div class="oe_kanban_details d-flex flex-column justify-content-between">
+                                <div>
+                                    <strong class="o_kanban_record_title oe_partner_heading">
+                                        <field name="name"/>
+                                    </strong>
+                                    <div class="text-muted">
+                                        <field name="breed"/>
+                                    </div>
+                                    <div class="text-muted" t-if="record.stable_box.raw_value">
+                                        📍 <field name="stable_box"/>
+                                    </div>
+                                </div>
+                                <div class="o_kanban_record_bottom">
+                                    <div class="oe_kanban_bottom_left text-muted">
+                                        <span t-if="record.primary_groomer_id.raw_value">
+                                            👤 <field name="primary_groomer_id"/>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_bbs_horse_form" model="ir.ui.view">
+        <field name="name">bbs.horse.form</field>
+        <field name="model">bbs.horse</field>
+        <field name="arch" type="xml">
+            <form string="Data Kuda">
+                <sheet>
+                    <!-- Smart Button: Log Perawatan -->
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_care_logs" 
+                                type="object" 
+                                class="oe_stat_button" 
+                                icon="fa-heartbeat">
+                            <field name="care_log_count" widget="statinfo" string="Log Rawat"/>
+                        </button>
+                    </div>
+
+                    <!-- Foto Kuda -->
+                    <field name="image_1920" widget="image" class="oe_avatar" options="{'preview_image': 'image_1920'}"/>
+
+                    <!-- Nama Kuda -->
+                    <div class="oe_title">
+                        <label for="name" string="Nama Kuda"/>
+                        <h1>
+                            <field name="name" placeholder="Contoh: Bintang, Thunder, Bella"/>
+                        </h1>
+                    </div>
+
+                    <group>
+                        <group string="Identitas Fisik">
+                            <field name="gender"/>
+                            <field name="breed" placeholder="Thoroughbred / Sandalwood / G1"/>
+                            <field name="color" placeholder="Bay / Chestnut / Hitam"/>
+                            <field name="date_of_birth"/>
+                            <field name="age"/>
+                        </group>
+                        <group string="Lokasi &amp; Tanggung Jawab">
+                            <field name="stable_box" placeholder="Box A-01"/>
+                            <field name="primary_groomer_id"/>
+                            <field name="owner_id"/>
+                            <field name="active" invisible="1"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page string="Riwayat Log Perawatan" name="care_logs">
+                            <field name="care_log_ids">
+                                <tree string="Log Perawatan" editable="bottom">
+                                    <field name="date"/>
+                                    <field name="activity_type"/>
+                                    <field name="groomer_id"/>
+                                    <field name="description"/>
+                                    <field name="state" widget="badge" 
+                                           decoration-info="state == 'draft'" 
+                                           decoration-success="state == 'done'"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Catatan Khusus &amp; Diet" name="notes">
+                            <field name="notes" placeholder="Catatan makanan, vitamin khusus, alergi, atau kebiasaan kuda..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+
+                <!-- Chatter: Kirim Pesan, Log Catatan & Aktivitas -->
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_bbs_horse_search" model="ir.ui.view">
+        <field name="name">bbs.horse.search</field>
+        <field name="model">bbs.horse</field>
+        <field name="arch" type="xml">
+            <search string="Cari Kuda">
+                <field name="name"/>
+                <field name="breed"/>
+                <field name="stable_box"/>
+                <field name="primary_groomer_id"/>
+                <field name="owner_id"/>
+                <separator/>
+                <filter string="Jantan" name="stallions" domain="[('gender', '=', 'stallion')]"/>
+                <filter string="Betina" name="mares" domain="[('gender', '=', 'mare')]"/>
+                <filter string="Kebiri" name="geldings" domain="[('gender', '=', 'gelding')]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Ras / Breed" name="group_breed" context="{'group_by': 'breed'}"/>
+                    <filter string="Groomer" name="group_groomer" context="{'group_by': 'primary_groomer_id'}"/>
+                    <filter string="Pemilik" name="group_owner" context="{'group_by': 'owner_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action Window -->
+    <record id="action_bbs_horse" model="ir.actions.act_window">
+        <field name="name">Master Kuda</field>
+        <field name="res_model">bbs.horse</field>
+        <field name="view_mode">kanban,tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Tambahkan kuda pertama Borneo Berkuda Stable!
+            </p>
+        </field>
+    </record>
+</odoo>

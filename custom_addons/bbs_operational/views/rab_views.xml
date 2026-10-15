@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- 1. Tampilan Tabel Daftar RAB (Tree / List View) -->
+    <record id="view_bbs_rab_tree" model="ir.ui.view">
+        <field name="name">bbs.rab.tree</field>
+        <field name="model">bbs.rab</field>
+        <field name="arch" type="xml">
+            <tree string="Daftar RAB Bulanan BBS">
+                <field name="name"/>
+                <field name="month"/>
+                <field name="year" widget="char"/>
+                <field name="date_submission"/>
+                <field name="total_amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                <field name="state" widget="badge" 
+                       decoration-info="state == 'draft'" 
+                       decoration-warning="state == 'submitted'" 
+                       decoration-success="state == 'approved'" 
+                       decoration-danger="state == 'rejected'"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- 2. Tampilan Form Input RAB Lengkap -->
+    <record id="view_bbs_rab_form" model="ir.ui.view">
+        <field name="name">bbs.rab.form</field>
+        <field name="model">bbs.rab</field>
+        <field name="arch" type="xml">
+            <form string="RAB Operasional Bulanan">
+                <!-- Header Statusbar & Tombol Aksi -->
+                <header>
+                    <button name="action_submit" string="Ajukan ke Owner" type="object" class="oe_highlight" invisible="state != 'draft'"/>
+                    <!-- Hanya Manager / Owner yang punya tombol Setujui & Tolak -->
+                    <button name="action_approve" string="Setujui (Dana Cair)" type="object" class="oe_highlight" invisible="state != 'submitted'" groups="bbs_operational.group_bbs_manager"/>
+                    <button name="action_reject" string="Tolak / Revisi" type="object" invisible="state != 'submitted'" groups="bbs_operational.group_bbs_manager"/>
+                    <button name="action_draft" string="Set ke Draft" type="object" invisible="state == 'draft'" groups="bbs_operational.group_bbs_manager"/>
+                    <button name="%(bbs_operational.action_report_bbs_rab)d" string="Cetak Laporan PDF" type="action" class="btn-secondary" icon="fa-print"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,submitted,approved"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name" string="Judul / Periode RAB"/>
+                        <h1>
+                            <field name="name" placeholder="Contoh: RAB Operasional - Agustus 2026" readonly="state != 'draft'"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="Periode Anggaran">
+                            <field name="month" readonly="state != 'draft'"/>
+                            <field name="year" widget="char" readonly="state != 'draft'"/>
+                            <field name="date_submission" readonly="state != 'draft'"/>
+                        </group>
+                        <group string="Ringkasan Biaya">
+                            <field name="total_amount" style="font-size: 24px; font-weight: bold; color: #008766;"/>
+                        </group>
+                    </group>
+                    <group string="Realisasi Saldo Kas (Bulan Berjalan)" invisible="not cash_flow_ids">
+                        <field name="saldo_awal" widget="monetary" options="{'currency_field': 'currency_id'}" invisible="saldo_awal == 0"/>
+                        <field name="total_kas_masuk" widget="monetary" options="{'currency_field': 'currency_id'}" style="color: #008766; font-weight: bold;"/>
+                        <field name="total_kas_keluar" widget="monetary" options="{'currency_field': 'currency_id'}" style="color: #d9534f; font-weight: bold;"/>
+                        <field name="balance" widget="monetary" options="{'currency_field': 'currency_id'}" decoration-danger="balance &lt; 0" decoration-success="balance &gt;= 0" decoration-bf="1" style="font-size: 20px;"/>
+                    </group>
+
+                    <!-- Tabel Detail Baris Belanja -->
+                    <notebook>
+                        <page string="Rincian Kebutuhan Belanja" name="rab_lines">
+                            <field name="line_ids" readonly="state != 'draft'">
+                                <tree editable="bottom">
+                                    <field name="name" string="Kebutuhan / Uraian"/>
+                                    <field name="qty" string="Jumlah"/>
+                                    <field name="uom" string="Satuan"/>
+                                    <field name="price_unit" string="Harga Satuan (Rp)"/>
+                                    <field name="subtotal" string="Total (Rp)"/>
+                                    <field name="category" string="Keterangan / Pos"/>
+                                    <field name="is_talangan" string="Talangan Staf?" widget="boolean_toggle"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Realisasi Kas Aktual" name="cash_flow_lines" invisible="not cash_flow_ids and state == 'draft'">
+                            <div class="alert alert-info py-2 px-3 mb-2" role="alert">
+                                <strong>Catatan Realisasi Kas:</strong> Daftar mutasi transaksi uang riil (masuk &amp; keluar) yang telah dicatat dan teralokasi ke RAB bulan ini.
+                            </div>
+                            <field name="cash_flow_ids">
+                                <tree editable="bottom">
+                                    <field name="ref"/>
+                                    <field name="date"/>
+                                    <field name="name"/>
+                                    <field name="category"/>
+                                    <field name="pic_type"/>
+                                    <field name="transaction_type" widget="badge" 
+                                           decoration-success="transaction_type == 'in'" 
+                                           decoration-danger="transaction_type == 'out'"/>
+                                    <field name="amount" widget="monetary" options="{'currency_field': 'currency_id'}" 
+                                           decoration-success="transaction_type == 'in'" 
+                                           decoration-danger="transaction_type == 'out'" 
+                                           decoration-bf="1"/>
+                                    <field name="currency_id" column_invisible="True"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Catatan Pengajuan" name="notes">
+                            <field name="notes" readonly="state != 'draft'" placeholder="Tulis pesan pengantar ke Pak Owner di sini (misal: info kelas malam, talangan Mas Ikhsan, dsb)..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+
+                <!-- Chatter Kotak Diskusi & Log Riwayat -->
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- 3. Tampilan Pencarian & Filter (Search View Dibuat Record Terpisah) -->
+    <record id="view_bbs_rab_search" model="ir.ui.view">
+        <field name="name">bbs.rab.search</field>
+        <field name="model">bbs.rab</field>
+        <field name="arch" type="xml">
+            <search string="Pencarian RAB">
+                <!-- Kolom Pencarian Cepat -->
+                <field name="name" string="Judul / Periode"/>
+                <field name="year"/>
+                <field name="line_ids" string="Uraian Belanja" filter_domain="[('line_ids.name', 'ilike', self)]"/>
+                <field name="line_ids" string="Satuan" filter_domain="[('line_ids.uom', '=', self)]"/>
+
+                <separator/>
+                <!-- Filter Status -->
+                <filter string="Draft" name="state_draft" domain="[('state', '=', 'draft')]"/>
+                <filter string="Diajukan" name="state_submitted" domain="[('state', '=', 'submitted')]"/>
+                <filter string="Disetujui" name="state_approved" domain="[('state', '=', 'approved')]"/>
+                <separator/>
+
+                <!-- Filter Berdasarkan Satuan & Talangan -->
+                <filter string="Ada Satuan Karung" name="filter_uom_karung" domain="[('line_ids.uom', '=', 'karung')]"/>
+                <filter string="Ada Satuan Bulan" name="filter_uom_bulan" domain="[('line_ids.uom', '=', 'bulan')]"/>
+                <filter string="Ada Talangan Staf" name="filter_has_talangan" domain="[('line_ids.is_talangan', '=', True)]"/>
+
+                <!-- Pengelompokan (Group By) -->
+                <group expand="0" string="Group By">
+                    <filter string="Status" name="group_by_state" context="{'group_by': 'state'}"/>
+                    <filter string="Tahun" name="group_by_year" context="{'group_by': 'year'}"/>
+                    <filter string="Bulan" name="group_by_month" context="{'group_by': 'month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- 4. Action Window (Membuka Tampilan) -->
+    <record id="action_bbs_rab" model="ir.actions.act_window">
+        <field name="name">RAB Operasional</field>
+        <field name="res_model">bbs.rab</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_bbs_rab_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Buat pengajuan RAB bulanan pertama untuk Borneo Berkuda Stable!
+            </p>
+        </field>
+    </record>
+
+    <!-- 5. Menu Navigasi di Odoo -->
+    <menuitem id="menu_bbs_operational_root" 
+              name="Operasional BBS" 
+              sequence="10"/>
+
+    <menuitem id="menu_bbs_rab_main" 
+              name="RAB Bulanan" 
+              parent="menu_bbs_operational_root" 
+              action="action_bbs_rab" 
+              sequence="10"/>
+
+</odoo>

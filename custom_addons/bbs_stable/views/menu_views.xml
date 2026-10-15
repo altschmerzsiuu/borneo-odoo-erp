@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Top-Level Root Menu (Akan Muncul di App Drawer) -->
+    <menuitem id="menu_bbs_stable_root" 
+              name="Borneo Berkuda" 
+              sequence="10" 
+              web_icon="bbs_stable,static/description/icon.png"/>
+
+    <!-- Submenu 1: Kuda -->
+    <menuitem id="menu_bbs_horses" 
+              name="Kuda" 
+              parent="menu_bbs_stable_root" 
+              sequence="10"/>
+
+    <menuitem id="menu_bbs_horse_list" 
+              name="Master Kuda" 
+              parent="menu_bbs_horses" 
+              action="action_bbs_horse" 
+              sequence="10"/>
+
+    <!-- Submenu 2: Operasional Harian Kandang -->
+    <menuitem id="menu_bbs_operations" 
+              name="Operasional Lapangan" 
+              parent="menu_bbs_stable_root" 
+              sequence="20"/>
+
+    <menuitem id="menu_bbs_horse_care_log_list" 
+              name="Log Rawat &amp; Aktivitas" 
+              parent="menu_bbs_operations" 
+              action="action_bbs_horse_care_log" 
+              sequence="10"/>
+</odoo>
