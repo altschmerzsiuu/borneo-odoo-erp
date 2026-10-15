@@ -1,0 +1,26 @@
+{
+    'name' : 'Borneo Berkuda - RAB & Kas Operasional',
+    'version' : '17.0.1.0.0',
+    'category' : 'Operations',
+    'summary' : 'Manajemen RAB Bulanan & Kas Operasional Harian Borneo Berkuda Stable',
+    'author' : 'Borneo Berkuda Stable',
+    'license' : 'LGPL-3',
+    'depends' : [
+        'base',
+        'mail',
+        'board',
+        'spreadsheet_dashboard',
+    ],
+    'data' : [
+        'security/bbs_security.xml',
+        'security/ir.model.access.csv',
+        'reports/rab_reports.xml',
+        'views/rab_views.xml',
+        'views/cash_flow_view.xml',
+        'views/dashboard_view.xml',
+        'data/dashboards.xml',
+    ],
+    'application' : True,
+    'installable' : True,
+    'auto_install' : False,
+}

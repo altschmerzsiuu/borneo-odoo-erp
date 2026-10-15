@@ -1,0 +1,23 @@
+# Log files
+*.log
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Data & database backups
+/data/
+*.dump
+*.sql
+
+# System files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+temp_web/
+.stubs/
+odoo/
+
+

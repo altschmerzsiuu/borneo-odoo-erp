@@ -1,0 +1,37 @@
+services:
+  web:
+    image: odoo:17.0
+    container_name: bbs_odoo_web
+    depends_on:
+      - db
+    ports:
+      - "8069:8069"
+    volumes:
+      - ./config:/etc/odoo
+      - ./custom_addons:/mnt/extra-addons/custom_addons
+      - ./addons_external:/mnt/extra-addons/addons_external
+      - odoo-web-data:/var/lib/odoo
+    environment:
+      - HOST=db
+      - USER=odoo
+      - PASSWORD=odoo
+    command: odoo -c /etc/odoo/odoo.conf --dev=reload,xml
+    restart: unless-stopped
+
+  db:
+    image: postgres:16
+    container_name: bbs_odoo_db
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=odoo
+      - POSTGRES_PASSWORD=odoo
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    volumes:
+      - odoo-db-data:/var/lib/postgresql/data/pgdata
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+
+volumes:
+  odoo-web-data:
+  odoo-db-data:

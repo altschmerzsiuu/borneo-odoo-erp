@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Kategori Modul di Pengaturan User Odoo -->
+    <record id="module_category_bbs_operational" model="ir.module.category">
+        <field name="name">Operasional BBS</field>
+        <field name="description">Hak akses operasional Borneo Berkuda Stable</field>
+        <field name="sequence">20</field>
+    </record>
+
+    <!-- Role 1: Staf Operasional (Mbak Ara, Mas Ikhsan) -->
+    <record id="group_bbs_user" model="res.groups">
+        <field name="name">Staf Operasional</field>
+        <field name="category_id" ref="module_category_bbs_operational"/>
+        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+
+    <!-- Role 2: Owner / Manager (Mas Dheny) -->
+    <record id="group_bbs_manager" model="res.groups">
+        <field name="name">Owner / Pengelola</field>
+        <field name="category_id" ref="module_category_bbs_operational"/>
+        <field name="implied_ids" eval="[(4, ref('group_bbs_user'))]"/>
+        <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
+    </record>
+</odoo>

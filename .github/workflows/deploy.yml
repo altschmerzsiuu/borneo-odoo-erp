@@ -1,0 +1,39 @@
+name: Deploy Odoo BBS to VPS
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    name: Deploy to Production VPS
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy to VPS via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USERNAME }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_SSH_PORT || 22 }}
+          script: |
+            echo "🚀 Starting Automated Deployment..."
+            cd /opt/borneoberkuda_odoo
+            
+            # 1. Pull latest code from GitHub
+            git pull origin main
+            
+            # 2. Upgrade custom modules in running Docker container
+            echo "🔄 Upgrading Odoo modules (bbs_operational, bbs_stable)..."
+            docker compose exec -T web odoo -c /etc/odoo/odoo.conf -d bbs_dev -u bbs_operational,bbs_stable --stop-after-init
+            
+            # 3. Restart Odoo web service
+            echo "♻️ Restarting Odoo web container..."
+            docker compose restart web
+            
+            echo "✅ Deployment Successful! Borneo Berkuda Stable is LIVE."

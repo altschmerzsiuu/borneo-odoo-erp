@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_bbs_horse_user,bbs.horse.user,model_bbs_horse,bbs_stable.group_bbs_user,1,1,0,0
+access_bbs_horse_manager,bbs.horse.manager,model_bbs_horse,bbs_stable.group_bbs_manager,1,1,1,1
+access_bbs_horse_care_log_user,bbs.horse.care.log.user,model_bbs_horse_care_log,bbs_stable.group_bbs_user,1,1,1,0
+access_bbs_horse_care_log_manager,bbs.horse.care.log.manager,model_bbs_horse_care_log,bbs_stable.group_bbs_manager,1,1,1,1

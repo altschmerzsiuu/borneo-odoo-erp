@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- 1. Tampilan Tabel Buku Kas (Tree View dengan Warna Otomatis) -->
+    <record id="view_bbs_cash_flow_tree" model="ir.ui.view">
+        <field name="name">bbs.cash.flow.tree</field>
+        <field name="model">bbs.cash.flow</field>
+        <field name="arch" type="xml">
+            <tree string="Buku Kas Operasional Harian BBS">
+                <field name="ref"/>
+                <field name="date"/>
+                <field name="name"/>
+                <field name="rab_id"/>
+                <field name="category"/>
+                <field name="pic_type"/>
+                <field name="payment_method"/>
+                <field name="transaction_type" widget="badge" 
+                       decoration-success="transaction_type == 'in'" 
+                       decoration-danger="transaction_type == 'out'"/>
+                <!-- Angka Pemasukan otomatis Hijau, Pengeluaran otomatis Merah -->
+                <field name="amount" widget="monetary" options="{'currency_field': 'currency_id'}" 
+                       decoration-success="transaction_type == 'in'" 
+                       decoration-danger="transaction_type == 'out'" 
+                       decoration-bf="1"/>
+                <field name="currency_id" column_invisible="True"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- 2. Tampilan Form Input Kas Harian -->
+    <!-- 2. Tampilan Form Input Kas Harian (Layout Rapih) -->
+    <record id="view_bbs_cash_flow_form" model="ir.ui.view">
+        <field name="name">bbs.cash.flow.form</field>
+        <field name="model">bbs.cash.flow</field>
+        <field name="arch" type="xml">
+            <form string="Catatan Kas Operasional">
+                <header>
+                    <button name="action_quick_add_admin_fee" 
+                            string="+ Catat Biaya Admin BCA" 
+                            type="object" 
+                            class="btn-primary" 
+                            invisible="transaction_type != 'out' or payment_method != 'transfer' or category == 'admin_bank' or has_child_fee"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_admin_fee" 
+                                type="object" 
+                                class="oe_stat_button" 
+                                icon="fa-credit-card" 
+                                invisible="not has_child_fee">
+                            <div class="o_stat_info">
+                                <span class="o_stat_text">Biaya Admin</span>
+                                <span class="o_stat_value text-danger">Tercatat</span>
+                            </div>
+                        </button>
+                    </div>
+
+                    <!-- Kotak Foto Bukti Struk di Pojok Kanan Atas -->
+                    <field name="receipt_image" widget="image" class="oe_avatar" options="{'preview_image': 'receipt_image'}"/>
+
+                    <div class="oe_title">
+                    <span class="text-muted"><field name="ref"/></span>
+                        <label for="name" string="Keterangan Transaksi"/>
+                        <h1>
+                            <field name="name" placeholder="Contoh: Beli Serbuk 250 Karung, Listrik Kandang, dsb"/>
+                        </h1>
+                    </div>
+
+                    <group>
+                        <group string="Detail Transaksi">
+                            <field name="transaction_type" widget="radio" options="{'horizontal': true}"/>
+                            <field name="amount" widget="monetary" options="{'currency_field': 'currency_id'}" style="font-size: 20px; font-weight: bold;"/>
+                            <field name="date"/>
+                            <field name="rab_id"/>
+                            <field name="category"/>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="has_child_fee" invisible="1"/>
+                        </group>
+                        <group string="Penanggung Jawab &amp; Pembayaran">
+                            <field name="pic_type"/>
+                            <field name="payment_method"/>
+                            <field name="parent_cf_id" invisible="not parent_cf_id" readonly="1"/>
+
+                            <!-- Opsi Otomatisasi Biaya Admin BCA -->
+                            <div class="mt-3 p-2 bg-light border rounded" invisible="transaction_type != 'out' or payment_method != 'transfer' or category == 'admin_bank' or has_child_fee">
+                                <div class="d-flex align-items-center justify-content-between mb-1">
+                                    <label for="auto_admin_fee" string="Catat Biaya Admin BCA Otomatis?" class="fw-bold mb-0 text-primary"/>
+                                    <field name="auto_admin_fee" widget="boolean_toggle"/>
+                                </div>
+                                <div invisible="not auto_admin_fee" class="mt-2">
+                                    <label for="admin_fee_amount" string="Nominal Admin (Rp):" class="small text-muted"/>
+                                    <field name="admin_fee_amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                                    <p class="text-muted mb-0" style="font-size: 11px;">Otomatis membuat baris Admin BCA saat transaksi ini disimpan.</p>
+                                </div>
+                            </div>
+                        </group>
+                    </group>
+
+                    <!-- Catatan Tambahan Full Width -->
+                    <notebook>
+                        <page string="Catatan Tambahan" name="notes">
+                            <field name="notes" placeholder="Catatan toko, nomor referensi transfer bank, atau rincian lainnya..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+
+                <!-- Chatter Log & Diskusi -->
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_bbs_cash_flow_pivot" model="ir.ui.view">
+        <field name="name">bbs.cash.flow.pivot</field>
+        <field name="model">bbs.cash.flow</field>
+        <field name="arch" type="xml">
+            <pivot string="Rekapitulasi Kas Operasional" sample="1">
+                <field name="category" type="row"/>
+                <field name="amount_in" type="measure"/>
+                <field name="amount_out" type="measure"/>
+                <field name="amount_net" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <!-- 2b. Tampilan Grafik Visual Kas Operasional -->
+    <record id="view_bbs_cash_flow_graph" model="ir.ui.view">
+        <field name="name">bbs.cash.flow.graph</field>
+        <field name="model">bbs.cash.flow</field>
+        <field name="arch" type="xml">
+            <graph string="Grafik Pengeluaran per Pos" type="bar" sample="1">
+                <field name="category"/>
+                <field name="amount_out" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- 3. Pencarian & Filter Kas -->
+    <record id="view_bbs_cash_flow_search" model="ir.ui.view">
+        <field name="name">bbs.cash.flow.search</field>
+        <field name="model">bbs.cash.flow</field>
+        <field name="arch" type="xml">
+            <search string="Cari Transaksi Kas">
+                <field name="name" string="Keterangan"/>
+                <field name="category"/>
+                <field name="pic_type"/>
+                <separator/>
+                <filter string="Uang Masuk (Pemasukan)" name="filter_in" domain="[('transaction_type', '=', 'in')]"/>
+                <filter string="Uang Keluar (Pengeluaran)" name="filter_out" domain="[('transaction_type', '=', 'out')]"/>
+                <separator/>
+                <group expand="0" string="Group By">
+                    <filter string="Tipe (Masuk/Keluar)" name="group_by_type" context="{'group_by': 'transaction_type'}"/>
+                    <filter string="Kategori" name="group_by_category" context="{'group_by': 'category'}"/>
+                    <filter string="PIC" name="group_by_pic" context="{'group_by': 'pic_type'}"/>
+                    <filter string="Tanggal" name="group_by_date" context="{'group_by': 'date:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- 4. Action Window Buku Kas -->
+    <record id="action_bbs_cash_flow" model="ir.actions.act_window">
+        <field name="name">Buku Kas Harian</field>
+        <field name="res_model">bbs.cash.flow</field>
+        <field name="view_mode">tree,pivot,graph,form</field>
+        <field name="search_view_id" ref="view_bbs_cash_flow_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Catat transaksi kas masuk atau kas keluar pertama Borneo Berkuda Stable!
+            </p>
+        </field>
+    </record>
+
+    <!-- 5. Menu Navigasi di Bawah 'Operasional BBS' -->
+    <menuitem id="menu_bbs_cash_flow_main" 
+              name="Buku Kas Harian" 
+              parent="menu_bbs_operational_root" 
+              action="action_bbs_cash_flow" 
+              sequence="20"/>
+
+    <!-- 6. Wizard / Form Konfigurasi Biaya Kas BBS -->
+    <record id="view_bbs_cash_config_form" model="ir.ui.view">
+        <field name="name">bbs.cash.config.form</field>
+        <field name="model">bbs.cash.config</field>
+        <field name="arch" type="xml">
+            <form string="Pengaturan Biaya Kas Operasional">
+                <sheet>
+                    <div class="oe_title mb-3">
+                        <h2 style="color: #1b4d3e;">Pengaturan Biaya Kas Operasional BBS</h2>
+                        <p class="text-muted">Konfigurasikan tarif standar biaya transfer perbankan Borneo Berkuda Stable</p>
+                    </div>
+                    <group>
+                        <group string="Tarif Transfer &amp; Perbankan">
+                            <field name="company_id" invisible="1"/>
+                            <field name="default_admin_bank_fee" widget="monetary" options="{'currency_field': 'currency_id'}" style="font-size: 18px; font-weight: bold;"/>
+                        </group>
+                    </group>
+                    <div class="alert alert-info" role="alert">
+                        <strong>Petunjuk:</strong> Nilai ini akan otomatis dijadikan acuan saat staf mencatat transaksi kas pengeluaran dengan metode Transfer Bank (BI-FAST standar: Rp 2.500, Online Transfer: Rp 6.500).
+                    </div>
+                </sheet>
+                <footer>
+                    <button string="Simpan Perubahan" type="object" name="action_save" class="btn-primary"/>
+                    <button string="Tutup" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_bbs_cash_config" model="ir.actions.act_window">
+        <field name="name">Pengaturan Biaya Kas</field>
+        <field name="res_model">bbs.cash.config</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <!-- Menu Konfigurasi -->
+    <menuitem id="menu_bbs_config_root" 
+              name="Konfigurasi" 
+              parent="menu_bbs_operational_root" 
+              sequence="90"/>
+
+    <menuitem id="menu_bbs_cash_config_main" 
+              name="Pengaturan Biaya Kas" 
+              parent="menu_bbs_config_root" 
+              action="action_bbs_cash_config" 
+              sequence="10"/>
+</odoo>
+
