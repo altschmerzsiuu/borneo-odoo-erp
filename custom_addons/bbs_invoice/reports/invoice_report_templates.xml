@@ -14,9 +14,9 @@
             <!-- ======================================================== -->
             <div class="row align-items-center" style="margin-top: 0; padding-top: 0; margin-bottom: 6px;">
                 <div class="col-4" style="padding-top: 0;">
-                    <!-- Logo BBS Resmi (Base64 agar selalu muncul tajam tanpa terpotong) -->
-                    <img t-if="o.bbs_logo_image" t-att-src="image_data_uri(o.bbs_logo_image)" style="max-height: 70px; max-width: 200px; object-fit: contain;" alt="Logo Borneo Berkuda Stable"/>
-                    <img t-elif="o.company_id.logo" t-att-src="image_data_uri(o.company_id.logo)" style="max-height: 70px; max-width: 200px; object-fit: contain;" alt="Logo Company"/>
+                    <!-- Logo BBS Resmi (Base64 agar selalu muncul tajam dan proporsional) -->
+                    <img t-if="o.bbs_logo_image" t-att-src="image_data_uri(o.bbs_logo_image)" style="max-height: 110px; max-width: 240px; width: auto; object-fit: contain;" alt="Logo Borneo Berkuda Stable"/>
+                    <img t-elif="o.company_id.logo" t-att-src="image_data_uri(o.company_id.logo)" style="max-height: 110px; max-width: 240px; width: auto; object-fit: contain;" alt="Logo Company"/>
                 </div>
                 <div class="col-8 text-end" style="padding-top: 0;">
                     <div style="font-size: 19px; font-weight: 800; color: #1b4d3e; letter-spacing: 0.5px;">BORNEO BERKUDA STABLE</div>
