@@ -29,7 +29,7 @@ class AccountMove(models.Model):
             except Exception:
                 pass
         for rec in self:
-            rec.bbs_logo_image = rec.company_id.logo or b64_logo
+            rec.bbs_logo_image = b64_logo or rec.company_id.logo
 
     # Info Rekening Pembayaran Khusus Faktur Ini
     bbs_payment_bank_name = fields.Char(
