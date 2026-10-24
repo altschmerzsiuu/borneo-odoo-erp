@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_company_form_bbs_invoice" model="ir.ui.view">
+        <field name="name">res.company.form.bbs.invoice</field>
+        <field name="model">res.company</field>
+        <field name="inherit_id" ref="base.view_company_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Format Faktur Resmi BBS" name="bbs_invoice_settings">
+                    <group>
+                        <group string="Kop Surat &amp; Kontak Penagihan">
+                            <field name="bbs_invoice_address_header"/>
+                            <field name="bbs_invoice_phone"/>
+                            <field name="bbs_invoice_email"/>
+                        </group>
+                        <group string="Instruksi Rekening Pembayaran (Transfer)">
+                            <field name="bbs_invoice_bank_name"/>
+                            <field name="bbs_invoice_bank_account_name"/>
+                            <field name="bbs_invoice_bank_account_number"/>
+                        </group>
+                    </group>
+                    <group string="Otorisasi &amp; Tanda Tangan Elektronik">
+                        <group>
+                            <field name="bbs_invoice_signer_city"/>
+                            <field name="bbs_invoice_signer_name"/>
+                            <field name="bbs_invoice_signer_title"/>
+                        </group>
+                        <group>
+                            <field name="bbs_invoice_signature_image" widget="image" class="oe_avatar"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

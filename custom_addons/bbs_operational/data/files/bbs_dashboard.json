@@ -185,11 +185,15 @@
                 "category"
               ],
               "measure": "amount_out",
+              "order": "DESC",
               "resModel": "bbs.cash.flow"
             },
             "searchParams": {
               "comparison": null,
-              "context": {},
+              "context": {
+                "group_by_no_leaf": 1,
+                "group_by": []
+              },
               "domain": [
                 [
                   "transaction_type",
@@ -204,7 +208,7 @@
             },
             "type": "odoo_bar",
             "verticalAxisPosition": "left",
-            "stacked": false
+            "stacked": true
           }
         },
         {

@@ -17,7 +17,6 @@
         'reports/rab_reports.xml',
         'views/rab_views.xml',
         'views/cash_flow_view.xml',
-        'views/dashboard_view.xml',
         'data/dashboards.xml',
     ],
     'application' : True,

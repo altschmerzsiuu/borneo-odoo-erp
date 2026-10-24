@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Template Dokumen Satuan Faktur BBS -->
+    <template id="report_invoice_document_bbs">
+        <t t-set="o" t-value="o.with_context(lang=lang)"/>
+        <div class="article" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #1f2937; line-height: 1.4; padding: 10px 20px;">
+            
+            <!-- 1. HEADER / KOP SURAT RESMI BBS -->
+            <div class="row align-items-center" style="margin-bottom: 8px;">
+                <div class="col-4">
+                    <img t-if="o.bbs_logo_image" t-att-src="image_data_uri(o.bbs_logo_image)" style="max-height: 80px; max-width: 220px; object-fit: contain;" alt="Logo Borneo Berkuda Stable"/>
+                    <img t-elif="o.company_id.logo" t-att-src="image_data_uri(o.company_id.logo)" style="max-height: 80px; max-width: 220px; object-fit: contain;" alt="Logo Company"/>
+                </div>
+                <div class="col-8 text-end">
+                    <div style="font-size: 20px; font-weight: 800; color: #1b4d3e; letter-spacing: 0.5px;">BORNEO BERKUDA STABLE</div>
+                    <div style="font-size: 11px; color: #4b5563; margin-top: 2px;">
+                        <span t-esc="o.company_id.bbs_invoice_address_header or 'Jl. Ruhui Rahayu, Sepinggan Pratama, Balikpapan Selatan, Balikpapan, Kalimantan Timur'"/>
+                    </div>
+                    <div style="font-size: 11px; color: #4b5563;">
+                        Telp/WA: <span t-esc="o.company_id.bbs_invoice_phone or '0851-7314-0965'"/> | Email: <span t-esc="o.company_id.bbs_invoice_email or 'operasional@borneoberkuda.co.id'"/>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Garis Pembatas Kop Surat Berwarna Hijau BBS -->
+            <div style="border-bottom: 2.5px solid #1b4d3e; margin-bottom: 22px;"></div>
+
+            <!-- 2. METADATA PENAGIHAN & KOTAK RINGKASAN (3 PILL BOX KMS STYLE) -->
+            <div class="row" style="margin-bottom: 25px;">
+                <!-- Sisi Kiri: Alamat Klien & No Invoice -->
+                <div class="col-7">
+                    <div style="font-size: 13px; font-weight: bold; color: #1b4d3e; margin-bottom: 4px;">Alamat Penagihan :</div>
+                    <div style="font-size: 14px; font-weight: bold; color: #111827;">
+                        <span t-field="o.partner_id.name"/>
+                    </div>
+                    <div t-if="o.partner_id.street" style="font-size: 12px; color: #374151;">
+                        <span t-field="o.partner_id.street"/>
+                    </div>
+                    <div style="font-size: 12px; color: #374151;">
+                        <span t-if="o.partner_id.city" t-field="o.partner_id.city"/>
+                        <span t-if="o.partner_id.state_id">, <span t-field="o.partner_id.state_id.name"/></span>
+                        <span t-if="o.partner_id.country_id">, <span t-field="o.partner_id.country_id.name"/></span>
+                    </div>
+                    <div t-if="o.partner_id.phone" style="font-size: 12px; color: #6b7280; margin-top: 2px;">
+                        Kontak: <span t-field="o.partner_id.phone"/>
+                    </div>
+
+                    <div style="margin-top: 16px;">
+                        <div style="font-size: 11px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px;">No Invoice:</div>
+                        <div style="font-size: 20px; font-weight: 800; color: #111827; letter-spacing: 0.5px;">
+                            <span t-if="o.name and o.name != '/'" t-field="o.name"/>
+                            <span t-else="" style="color: #9ca3af;">DRAFT FAKTUR</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sisi Kanan: 3 Pill Box (Tanggal, Mohon Dibayar, Jatuh Tempo) -->
+                <div class="col-5">
+                    <table style="width: 100%; border-collapse: collapse; border: 1px solid #d1d5db; border-radius: 6px; overflow: hidden; text-align: center;">
+                        <thead>
+                            <tr style="background-color: #f9fafb; border-bottom: 1px solid #d1d5db; font-size: 11px;">
+                                <th style="padding: 7px 4px; font-weight: 600; color: #6b7280; border-right: 1px solid #d1d5db; width: 33%;">Tanggal</th>
+                                <th style="padding: 7px 4px; font-weight: 700; color: #1b4d3e; background-color: #e8f5e9; border-right: 1px solid #d1d5db; width: 34%;">Mohon Dibayar</th>
+                                <th style="padding: 7px 4px; font-weight: 600; color: #6b7280; width: 33%;">Jatuh Tempo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="font-size: 12px;">
+                                <td style="padding: 9px 4px; color: #111827; border-right: 1px solid #d1d5db;">
+                                    <span t-if="o.invoice_date" t-esc="o.invoice_date.strftime('%d/%m/%Y')"/>
+                                    <span t-else="">-</span>
+                                </td>
+                                <td style="padding: 9px 4px; font-weight: 800; color: #1b4d3e; background-color: #e8f5e9; border-right: 1px solid #d1d5db;">
+                                    <span t-field="o.amount_total" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                </td>
+                                <td style="padding: 9px 4px; color: #111827;">
+                                    <span t-if="o.invoice_date_due" t-esc="o.invoice_date_due.strftime('%d/%m/%Y')"/>
+                                    <span t-elif="o.invoice_date" t-esc="o.invoice_date.strftime('%d/%m/%Y')"/>
+                                    <span t-else="">-</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 3. TABEL RINCIAN LAYANAN & BIAYA -->
+            <div style="margin-bottom: 20px;">
+                <table class="table" style="width: 100%; border-collapse: collapse; margin-bottom: 0;">
+                    <thead>
+                        <tr style="border-top: 1px solid #e5e7eb; border-bottom: 2px solid #1b4d3e; background-color: #f9fafb; font-size: 12px;">
+                            <th style="padding: 9px 8px; text-align: left; color: #374151; font-weight: 700; width: 50%;">Keterangan</th>
+                            <th style="padding: 9px 8px; text-align: center; color: #374151; font-weight: 700; width: 12%;">Qty</th>
+                            <th style="padding: 9px 8px; text-align: right; color: #374151; font-weight: 700; width: 18%;">Harga (Rp.)</th>
+                            <th style="padding: 9px 8px; text-align: right; color: #374151; font-weight: 700; width: 20%;">Jumlah (Rp.)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-set="lines" t-value="o.invoice_line_ids.filtered(lambda l: l.display_type in ('product', False) or not l.display_type)"/>
+                        <t t-foreach="lines" t-as="line">
+                            <tr style="border-bottom: 1px solid #f3f4f6; font-size: 12px;">
+                                <td style="padding: 10px 8px; vertical-align: top;">
+                                    <div style="font-weight: 700; color: #111827;">
+                                        <span t-field="line.name"/>
+                                    </div>
+                                </td>
+                                <td style="padding: 10px 8px; text-align: center; vertical-align: top; color: #374151;">
+                                    <span t-esc="'%.2f' % line.quantity if line.quantity % 1 != 0 else '%.0f' % line.quantity"/>
+                                </td>
+                                <td style="padding: 10px 8px; text-align: right; vertical-align: top; color: #374151;">
+                                    <span t-field="line.price_unit" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                </td>
+                                <td style="padding: 10px 8px; text-align: right; vertical-align: top; font-weight: 700; color: #111827;">
+                                    <span t-field="line.price_subtotal" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                </td>
+                            </tr>
+                        </t>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 4. RINGKASAN TOTAL (SUBTOTAL, PAJAK, TOTAL TAGIHAN) -->
+            <div class="row" style="margin-bottom: 25px;">
+                <div class="col-6"></div>
+                <div class="col-6">
+                    <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
+                        <tr style="border-bottom: 1px solid #f3f4f6;">
+                            <td style="padding: 6px 8px; font-weight: 700; color: #1b4d3e;">Subtotal</td>
+                            <td style="padding: 6px 8px; text-align: right; font-weight: 700; color: #111827;">
+                                <span t-field="o.amount_untaxed" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                            </td>
+                        </tr>
+                        <t t-if="o.amount_tax != 0">
+                            <tr style="border-bottom: 1px solid #f3f4f6;">
+                                <td style="padding: 6px 8px; color: #4b5563;">Pajak (PPN/PPh)</td>
+                                <td style="padding: 6px 8px; text-align: right; color: #111827;">
+                                    <span t-field="o.amount_tax" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                </td>
+                            </tr>
+                        </t>
+                        <tr style="border-top: 1.5px solid #1b4d3e; background-color: #f9fafb;">
+                            <td style="padding: 8px 8px; font-size: 14px; font-weight: 800; color: #1b4d3e;">Total Tagihan</td>
+                            <td style="padding: 8px 8px; text-align: right; font-size: 14px; font-weight: 800; color: #1b4d3e;">
+                                <span t-field="o.amount_total" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 5. INSTRUKSI PEMBAYARAN & TANDA TANGAN (FOOTER SECTION) -->
+            <div class="row align-items-end" style="margin-top: 15px; padding-top: 15px; border-top: 1px dashed #d1d5db;">
+                <!-- Sisi Kiri: Rekening Pembayaran Resmi BBS -->
+                <div class="col-7">
+                    <div style="font-size: 12px; font-weight: 700; color: #111827; margin-bottom: 4px;">
+                        Pembayaran dengan transfer ditujukan kepada :
+                    </div>
+                    <div style="font-size: 12px; font-weight: 800; color: #1b4d3e;">
+                        <span t-esc="o.bbs_payment_bank_account_name or o.company_id.bbs_invoice_bank_account_name or 'BORNEO BERKUDA STABLE'"/>
+                    </div>
+                    <div style="font-size: 12px; color: #374151;">
+                        <span t-esc="o.bbs_payment_bank_name or o.company_id.bbs_invoice_bank_name or 'Bank Central Asia (BCA)'"/>
+                    </div>
+                    <div style="font-size: 12px; color: #111827;">
+                        No. Rekening : <strong style="letter-spacing: 0.5px;"><span t-esc="o.bbs_payment_bank_account_number or o.company_id.bbs_invoice_bank_account_number or '037-901-111-3333'"/></strong>
+                    </div>
+                    <div style="font-size: 10px; color: #6b7280; margin-top: 8px;">
+                        * Harap menyertakan nomor invoice pada berita transfer untuk kemudahan verifikasi kas.
+                    </div>
+                </div>
+
+                <!-- Sisi Kanan: QR Code & Tanda Tangan Elektronik persis KMS -->
+                <div class="col-5 text-end">
+                    <div style="font-size: 11px; font-style: italic; color: #4b5563; margin-bottom: 6px;">
+                        <span t-esc="o.bbs_signer_city or 'Balikpapan'"/>, <span t-esc="context_timestamp(datetime.datetime.now()).strftime('%d %B %Y') if not o.invoice_date else o.invoice_date.strftime('%d %B %Y')"/>
+                    </div>
+                    <div class="d-flex justify-content-end align-items-center" style="display: flex; justify-content: flex-end; align-items: center; gap: 12px;">
+                        <!-- QR Code Verifikasi Keaslian -->
+                        <div t-if="o.bbs_qr_code" style="text-align: center;">
+                            <img t-att-src="image_data_uri(o.bbs_qr_code)" style="height: 65px; width: 65px; border: 1px solid #e5e7eb; border-radius: 4px; padding: 2px;" alt="QR Code Verifikasi"/>
+                        </div>
+                        <!-- Teks TTD & Nama Direktur -->
+                        <div style="text-align: left; min-width: 150px;">
+                            <div style="font-size: 9px; color: #6b7280;">Ditandatangani secara elektronik oleh:</div>
+                            <div style="font-size: 10px; color: #374151; font-weight: 600;"><span t-esc="o.bbs_signer_title or 'Direktur'"/></div>
+                            
+                            <!-- Gambar Scan TTD / Stempel Jika Ada -->
+                            <div t-if="o.bbs_signature_image" style="margin: 2px 0;">
+                                <img t-att-src="image_data_uri(o.bbs_signature_image)" style="max-height: 45px; max-width: 140px; object-fit: contain;"/>
+                            </div>
+                            <div t-else="" style="height: 25px;"></div>
+
+                            <div style="font-size: 11px; font-weight: 800; color: #111827;">
+                                <span t-esc="o.bbs_signer_name or 'Wawan Bagus Winarko'"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </template>
+
+    <!-- Template Induk Pelindung Loop docs -> o -->
+    <template id="report_invoice_bbs_main">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-set="lang" t-value="o.partner_id.lang or o.env.user.lang"/>
+                <t t-call="bbs_invoice.report_invoice_document_bbs" t-lang="lang"/>
+            </t>
+        </t>
+    </template>
+
+    <!-- Override Template Bawaan Odoo (account.report_invoice_document) agar tombol Print -> Invoices bawaan Odoo otomatis langsung memakai format resmi BBS ini -->
+    <template id="report_invoice_document_inherit_bbs" inherit_id="account.report_invoice_document" priority="99">
+        <xpath expr="//t[@t-call='web.external_layout']" position="replace">
+            <t t-call="bbs_invoice.report_invoice_document_bbs"/>
+        </xpath>
+    </template>
+
+</odoo>
