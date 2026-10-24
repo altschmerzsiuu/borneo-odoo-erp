@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_move_form_bbs_invoice" model="ir.ui.view">
+        <field name="name">account.move.form.bbs.invoice</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Detail Faktur BBS (KMS Style)" name="bbs_invoice_page" invisible="move_type not in ('out_invoice', 'out_refund')">
+                    <group>
+                        <group string="Rekening Tujuan Pembayaran">
+                            <field name="bbs_payment_bank_name"/>
+                            <field name="bbs_payment_bank_account_name"/>
+                            <field name="bbs_payment_bank_account_number"/>
+                        </group>
+                        <group string="Otorisasi &amp; Validasi Faktur">
+                            <field name="bbs_signer_city"/>
+                            <field name="bbs_signer_name"/>
+                            <field name="bbs_signer_title"/>
+                            <field name="bbs_show_signature"/>
+                            <field name="bbs_signature_image" widget="image" class="oe_avatar" invisible="not bbs_show_signature"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

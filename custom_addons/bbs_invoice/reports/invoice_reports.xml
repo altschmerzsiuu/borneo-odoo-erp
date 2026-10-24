@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Dedicated Report Action: Cetak Faktur Resmi BBS -->
+    <record id="action_report_bbs_invoice" model="ir.actions.report">
+        <field name="name">Faktur Resmi BBS (Format KMS)</field>
+        <field name="model">account.move</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">bbs_invoice.report_invoice_bbs_main</field>
+        <field name="report_file">bbs_invoice.report_invoice_bbs_main</field>
+        <field name="print_report_name">(object._get_report_base_filename())</field>
+        <field name="binding_model_id" ref="account.model_account_move"/>
+        <field name="binding_type">report</field>
+    </record>
+
+</odoo>
