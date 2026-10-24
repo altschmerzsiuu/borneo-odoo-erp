@@ -41,11 +41,11 @@ class ResCompany(models.Model):
     )
     bbs_invoice_signer_name = fields.Char(
         string='Nama Penandatangan',
-        default='Wawan Bagus Winarko'
+        default='Manajemen Operasional'
     )
     bbs_invoice_signer_title = fields.Char(
         string='Jabatan Penandatangan',
-        default='Direktur'
+        default='Borneo Berkuda Stable'
     )
     bbs_invoice_signature_image = fields.Binary(
         string='Gambar TTD & Stempel Resmi',

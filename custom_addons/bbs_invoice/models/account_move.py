@@ -96,9 +96,9 @@ class AccountMove(models.Model):
                 if not rec.bbs_signer_city:
                     rec.bbs_signer_city = comp.bbs_invoice_signer_city or 'Balikpapan'
                 if not rec.bbs_signer_name:
-                    rec.bbs_signer_name = comp.bbs_invoice_signer_name or 'Wawan Bagus Winarko'
+                    rec.bbs_signer_name = comp.bbs_invoice_signer_name or 'Manajemen Operasional'
                 if not rec.bbs_signer_title:
-                    rec.bbs_signer_title = comp.bbs_invoice_signer_title or 'Direktur'
+                    rec.bbs_signer_title = comp.bbs_invoice_signer_title or 'Borneo Berkuda Stable'
                 if not rec.bbs_signature_image and comp.bbs_invoice_signature_image:
                     rec.bbs_signature_image = comp.bbs_invoice_signature_image
 
