@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!-- Paperformat Khusus Faktur BBS: Margin Atas Rapat (8mm) agar tidak turun ke bawah -->
+    <!-- Paperformat Khusus Faktur BBS: Margin Atas Rapat (8mm) agar dokumen mulai tepat dari atas -->
     <record id="paperformat_bbs_invoice" model="report.paperformat">
         <field name="name">Format Kertas Faktur BBS (A4 Rapat Atas)</field>
         <field name="default" eval="False"/>
@@ -18,22 +18,15 @@
         <field name="dpi">90</field>
     </record>
 
-    <!-- Dedicated Report Action: Cetak Faktur Resmi BBS -->
-    <record id="action_report_bbs_invoice" model="ir.actions.report">
-        <field name="name">Faktur Resmi BBS</field>
-        <field name="model">account.move</field>
-        <field name="report_type">qweb-pdf</field>
-        <field name="report_name">bbs_invoice.report_invoice_bbs_main</field>
-        <field name="report_file">bbs_invoice.report_invoice_bbs_main</field>
-        <field name="print_report_name">(object._get_report_base_filename())</field>
+    <!-- Pasang paperformat ke report utama dan set nama tunggal: 'Faktur / Invoice' -->
+    <record id="account.account_invoices" model="ir.actions.report">
+        <field name="name">Faktur / Invoice</field>
         <field name="paperformat_id" ref="bbs_invoice.paperformat_bbs_invoice"/>
-        <field name="binding_model_id" ref="account.model_account_move"/>
-        <field name="binding_type">report</field>
     </record>
 
-    <!-- Pasang juga ke report invoice bawaan Odoo agar jika user klik tombol Print -> Invoices standar, margin atasnya juga rapat -->
-    <record id="account.account_invoices" model="ir.actions.report">
-        <field name="paperformat_id" ref="bbs_invoice.paperformat_bbs_invoice"/>
+    <!-- Lepas tombol ganda 'Invoices without Payment' dari menu Print agar bersih hanya 1 tombol -->
+    <record id="account.account_invoices_without_payment" model="ir.actions.report">
+        <field name="binding_model_id" eval="False"/>
     </record>
 
 </odoo>

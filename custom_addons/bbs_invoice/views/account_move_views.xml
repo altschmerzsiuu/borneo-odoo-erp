@@ -7,7 +7,7 @@
         <field name="inherit_id" ref="account.view_move_form"/>
         <field name="arch" type="xml">
             <xpath expr="//notebook" position="inside">
-                <page string="Detail Faktur BBS (KMS Style)" name="bbs_invoice_page" invisible="move_type not in ('out_invoice', 'out_refund')">
+                <page string="Detail Faktur BBS" name="bbs_invoice_page" invisible="move_type not in ('out_invoice', 'out_refund')">
                     <group>
                         <group string="Rekening Tujuan Pembayaran">
                             <field name="bbs_payment_bank_name"/>
